@@ -35,7 +35,6 @@
     .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
     .logo-group { display: flex; align-items: center; gap: 0.85rem; }
     
-    /* Clean Vector SVG Byakugan Eye Logo */
     .logo-svg {
       width: 40px;
       height: 40px;
@@ -51,7 +50,6 @@
     .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
     .card-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
     
-    /* Navigation Tabs inside Card */
     .tab-header { display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.25rem; padding-bottom: 0.5rem; }
     .nav-tab { padding: 0.4rem 0.85rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: all 0.15s; }
     .nav-tab.active { background-color: var(--bg-input); color: var(--byakugan-purple); border: 1px solid var(--border-color); }
@@ -86,11 +84,13 @@
     
     .code-block { background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; color: #e5e7eb; white-space: pre-wrap; word-break: break-all; max-height: 250px; overflow-y: auto; }
     
-    .history-item { padding: 0.75rem; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.15s; display: flex; justify-content: space-between; align-items: center; }
+    .history-item { padding: 0.75rem 1rem; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 0.65rem; cursor: pointer; transition: all 0.15s; }
     .history-item:hover { border-color: var(--byakugan-purple); background-color: var(--bg-card-hover); }
-    .history-url { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-main); word-break: break-all; }
+    .history-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; }
+    .history-url { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; color: var(--text-main); word-break: break-all; }
     .history-time { font-size: 0.7rem; color: var(--text-dim); }
-    
+    .history-stats { display: flex; gap: 0.5rem; font-size: 0.75rem; color: var(--text-muted); }
+
     .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .modal-card { background-color: var(--bg-card); border: 1px solid var(--accent-red); border-radius: 12px; padding: 2rem; max-width: 480px; width: 90%; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25); }
     .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
@@ -108,7 +108,6 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // Vector SVG Byakugan Eye Component
     function ByakuganLogo({ size = 40 }) {
       return (
         <svg className="logo-svg" style={{ width: size, height: size }} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,7 +135,7 @@
       const [results, setResults] = useState(null);
       const [errorMessage, setErrorMessage] = useState('');
       const [activeTab, setActiveTab] = useState('json');
-      const [leftTab, setLeftTab] = useState('setup'); // 'setup' | 'history'
+      const [leftTab, setLeftTab] = useState('setup');
       const [copyText, setCopyText] = useState('Copy');
       const [history, setHistory] = useState([]);
 
@@ -147,11 +146,12 @@
         }
       }, []);
 
-      const saveToHistory = (targetUrl, headerStr, cookieStr) => {
+      const saveToHistory = (targetUrl, headerStr, cookieStr, scanResults) => {
         const newItem = {
           url: targetUrl,
           authHeader: headerStr,
           cookie: cookieStr,
+          results: scanResults,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         const updated = [newItem, ...history.filter(i => i.url !== targetUrl)].slice(0, 10);
@@ -163,7 +163,7 @@
         setUrl(item.url);
         if (item.authHeader) setAuthHeader(item.authHeader);
         if (item.cookie) setCookie(item.cookie);
-        setLeftTab('setup');
+        if (item.results) setResults(item.results);
       };
 
       const clearHistory = () => {
@@ -213,7 +213,7 @@
           const data = await response.json();
           if (response.ok) {
             setResults(data);
-            saveToHistory(url, authHeader, cookie);
+            saveToHistory(url, authHeader, cookie, data);
           } else {
             setErrorMessage(data.error || 'Failed to probe target endpoint.');
           }
@@ -275,7 +275,6 @@
           </header>
 
           <div className="grid-2">
-            {/* Left Panel: Target Setup & Scan History Tabs */}
             <div>
               <div className="card">
                 <div className="tab-header">
@@ -354,7 +353,7 @@
                 ) : (
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                      <span className="form-label">Saved Endpoints</span>
+                      <span className="form-label">Saved Scans & Discovered Results</span>
                       {history.length > 0 && (
                         <button className="btn-copy" onClick={clearHistory}>Clear History</button>
                       )}
@@ -366,8 +365,17 @@
                     ) : (
                       history.map((item, idx) => (
                         <div key={idx} className="history-item" onClick={() => loadHistoryItem(item)}>
-                          <span className="history-url">{item.url}</span>
-                          <span className="history-time">{item.timestamp}</span>
+                          <div className="history-item-header">
+                            <span className="history-url">{item.url}</span>
+                            <span className="history-time">{item.timestamp}</span>
+                          </div>
+                          {item.results && item.results.field_analysis && (
+                            <div className="history-stats">
+                              <span>✓ Allowed: {item.results.field_analysis.allowed_fields?.length || 0}</span>
+                              <span>* Required: {item.results.field_analysis.required_fields?.length || 0}</span>
+                              <span>⚡ Mass Assignment: {item.results.field_analysis.mass_assignment_candidates?.length || 0}</span>
+                            </div>
+                          )}
                         </div>
                       ))
                     )}
@@ -376,7 +384,6 @@
               </div>
             </div>
 
-            {/* Right Panel: Field Matrix & Payload Output */}
             <div>
               {results ? (
                 <div>
