@@ -91,7 +91,7 @@ def probe_endpoint():
                         "status_code": res.status_code,
                         "response": res.text
                     })
-                    parsed_fields = parse_framework_error(res.text)
+                    parsed_fields = parse_framework_error(res.text, get_data)
                     error_discovered_fields.update(parsed_fields)
             except Exception as e:
                 results["method_status"][f"{method}_Error"] = str(e)

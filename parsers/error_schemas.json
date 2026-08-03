@@ -36,12 +36,35 @@
       }
     ]
   },
+  "nestjs_class_validator": {
+    "statusCode": 400,
+    "message": [
+      "username must be a string",
+      "email should not be empty",
+      "phoneNumber must be a phone number"
+    ],
+    "error": "Bad Request"
+  },
   "php_laravel": {
     "message": "The given data was invalid.",
     "errors": {
       "username": ["The username field is required."],
       "email": ["The email field is required."]
     }
+  },
+  "symfony_validator": {
+    "type": "https://symfony.com/errors/validation",
+    "title": "Validation Failed",
+    "violations": [
+      {
+        "propertyPath": "username",
+        "title": "This value should not be blank."
+      },
+      {
+        "propertyPath": "email",
+        "title": "This value is not a valid email address."
+      }
+    ]
   },
   "aspnet_core": {
     "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
@@ -86,6 +109,29 @@
       {
         "field": "username",
         "defaultMessage": "must not be empty"
+      }
+    ]
+  },
+  "graphql_errors": {
+    "errors": [
+      {
+        "message": "Variable \"$input\" got invalid value null at \"input.username\"; Expected type String!",
+        "locations": [{ "line": 2, "column": 3 }]
+      }
+    ]
+  },
+  "flask_restful": {
+    "message": {
+      "username": "Missing required parameter in the JSON body",
+      "email": "Missing required parameter in the JSON body"
+    }
+  },
+  "openapi_validator": {
+    "message": "Request validation failed",
+    "errors": [
+      {
+        "path": ".body.email",
+        "message": "should have required property 'email'"
       }
     ]
   },
