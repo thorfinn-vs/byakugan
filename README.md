@@ -9,6 +9,12 @@
 
 ---
 
+## 🎬 Demo
+
+![Byakugan Demo](assets/demo.gif)
+
+---
+
 ## 💡 Key Features
 
 - **Error-Driven Schema Reconstruction:** Instead of relying on blind wordlist fuzzing, Byakugan parses `400` / `422` validation error outputs from modern frameworks (FastAPI/Pydantic, Django REST, Zod, and Jackson) to automatically infer required request body fields and data types.
