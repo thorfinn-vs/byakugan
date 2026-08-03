@@ -93,9 +93,4 @@ python lab_server.py
 - **Target URL:** `http://localhost:5001/api/v1/users/123`
 - Enter this URL into Byakugan to visualize baseline fields, 422 Pydantic error parsing, and mass-assignment flags.
 
----
 
-
-##  Contributing
-
-Contributions, framework parser updates, and feature requests are welcome! Feel free to open an issue or submit a pull request.
