@@ -76,6 +76,9 @@ def probe_endpoint():
         except Exception as e:
             results["method_status"]["GET_Error"] = str(e)
 
+    # Initialize get_data safely before parsing errors
+    get_data = results["get_response_data"] if isinstance(results["get_response_data"], dict) else {}
+
     # 3. Probe mutating verbs (POST, PUT, PATCH) to extract validation schemas
     error_discovered_fields = {}
     for method in ["POST", "PUT", "PATCH"]:
@@ -97,7 +100,6 @@ def probe_endpoint():
                 results["method_status"][f"{method}_Error"] = str(e)
 
     # 4. Classify fields and synthesize JSON payload
-    get_data = results["get_response_data"] if isinstance(results["get_response_data"], dict) else {}
     results["field_analysis"] = classify_fields(get_data, error_discovered_fields)
     results["synthesized_payload"] = synthesize_payload(get_data, error_discovered_fields)
 

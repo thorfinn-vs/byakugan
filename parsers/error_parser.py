@@ -103,13 +103,15 @@ def parse_framework_error(error_response, get_response_data=None):
 
     # Case B: Top-level Dictionary
     elif isinstance(error_data, dict):
-        # 1. NestJS class-validator style: {"message": ["username must be a string"]}
+        # NestJS class-validator style: {"message": ["username must be a string"]}
+        STOP_WORDS = {"and", "or", "is", "the", "a", "an", "be", "must", "should", "not", "specified", "required"}
         if "message" in error_data and isinstance(error_data["message"], list):
             for msg in error_data["message"]:
                 if isinstance(msg, str):
                     matches = re.findall(r'([a-zA-Z0-9_]+)\s+(?:must|should|is|required)', msg, re.IGNORECASE)
                     for match in matches:
-                        discovered_fields[match] = "string"
+                        if match.lower() not in STOP_WORDS:
+                            discovered_fields[match] = "string"
 
         # 2. Check for GraphQL errors e.g. {"errors": [{"message": "...at \"input.username\"..."}]}
         if "errors" in error_data and isinstance(error_data["errors"], list):
