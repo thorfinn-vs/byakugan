@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BYAKUGAN 👁️ - REST API Method & Schema Workbench</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0a0c10;
+      --bg-card: #121620;
+      --bg-card-hover: #181e2c;
+      --bg-input: #0e121a;
+      --border-color: #232a3b;
+      --border-focus: #8b5cf6;
+      --byakugan-purple: #8b5cf6;
+      --byakugan-glow: rgba(139, 92, 246, 0.25);
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-cyan: #06b6d4;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-sans); min-height: 100vh; line-height: 1.5; }
+    .app-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+    .logo-group { display: flex; align-items: center; gap: 0.75rem; }
+    .eye-icon { width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle, #e0e7ff 0%, #a78bfa 50%, #6d28d9 100%); box-shadow: 0 0 15px var(--byakugan-glow); display: flex; align-items: center; justify-content: center; }
+    .eye-pupil { width: 14px; height: 14px; border-radius: 50%; background-color: #4c1d95; border: 2px solid #ffffff; }
+    .app-title { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { color: var(--text-muted); font-size: 0.875rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 868px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+    .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.375rem; }
+    .input-text { width: 100%; padding: 0.75rem 1rem; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-family: var(--font-mono); font-size: 0.9rem; transition: all 0.2s ease; }
+    .input-text:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--byakugan-glow); }
+    .verb-toggle-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .verb-chip { padding: 0.4rem 0.8rem; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background-color: var(--bg-input); color: var(--text-muted); user-select: none; transition: all 0.15s ease; }
+    .verb-chip.active-get { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); border-color: var(--accent-green); }
+    .verb-chip.active-post { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border-color: var(--accent-amber); }
+    .verb-chip.active-put { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: var(--accent-cyan); }
+    .verb-chip.active-patch { background: rgba(139, 92, 246, 0.15); color: var(--byakugan-purple); border-color: var(--byakugan-purple); }
+    .verb-chip.active-delete { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); border-color: var(--accent-red); }
+    .btn-primary { width: 100%; padding: 0.85rem 1.5rem; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: #ffffff; font-weight: 600; font-size: 0.95rem; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 15px var(--byakugan-glow); transition: transform 0.1s ease, filter 0.2s ease; }
+    .btn-primary:hover { filter: brightness(1.15); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .badge-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .badge { padding: 0.25rem 0.6rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.35rem; }
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-purple { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .code-block { background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; color: #e5e7eb; white-space: pre-wrap; word-break: break-all; max-height: 250px; overflow-y: auto; }
+    .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
+    .modal-card { background-color: var(--bg-card); border: 1px solid var(--accent-red); border-radius: 12px; padding: 2rem; max-width: 480px; width: 90%; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25); }
+    .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+    .btn-danger { flex: 1; padding: 0.75rem; background-color: var(--accent-red); color: white; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; }
+    .btn-secondary { flex: 1; padding: 0.75rem; background-color: transparent; color: var(--text-muted); border: 1px solid var(--border-color); font-weight: 600; border-radius: 6px; cursor: pointer; }
+  </style>
+
+  <!-- React & Babel via CDN for Zero-Dependency Standalone Mode -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function App() {
+      const [url, setUrl] = useState('');
+      const [cookie, setCookie] = useState('');
+      const [authHeader, setAuthHeader] = useState('');
+      const [selectedMethods, setSelectedMethods] = useState(['GET', 'POST', 'PUT', 'PATCH']);
+      const [showDeleteModal, setShowDeleteModal] = useState(false);
+      const [loading, setLoading] = useState(false);
+      const [results, setResults] = useState(null);
+      const [errorMessage, setErrorMessage] = useState('');
+      const [activeTab, setActiveTab] = useState('json');
+
+      const toggleMethod = (method) => {
+        if (method === 'DELETE' && !selectedMethods.includes('DELETE')) {
+          setShowDeleteModal(true);
+          return;
+        }
+        if (selectedMethods.includes(method)) {
+          setSelectedMethods(selectedMethods.filter((m) => m !== method));
+        } else {
+          setSelectedMethods([...selectedMethods, method]);
+        }
+      };
+
+      const confirmDeleteMethod = () => {
+        setSelectedMethods([...selectedMethods, 'DELETE']);
+        setShowDeleteModal(false);
+      };
+
+      const handleProbe = async () => {
+        if (!url) {
+          setErrorMessage('Please enter a target API Endpoint URL!');
+          return;
+        }
+        setErrorMessage('');
+        setLoading(true);
+        setResults(null);
+
+        const payload = {
+          url: url,
+          cookie: cookie,
+          headers: authHeader ? { Authorization: authHeader } : {},
+          methods: selectedMethods
+        };
+
+        try {
+          const response = await fetch('/api/probe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await response.json();
+          if (response.ok) {
+            setResults(data);
+          } else {
+            setErrorMessage(data.error || 'Failed to probe target endpoint.');
+          }
+        } catch (err) {
+          setErrorMessage('Could not connect to Byakugan backend server.');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const getCurlSnippet = () => {
+        if (!results || !results.url) return '';
+        const bodyStr = JSON.stringify(results.synthesized_payload, null, 2);
+        let curl = `curl -X PUT "${results.url}" \\\n  -H "Content-Type: application/json"`;
+        if (authHeader) curl += ` \\\n  -H "Authorization: ${authHeader}"`;
+        if (cookie) curl += ` \\\n  -H "Cookie: ${cookie}"`;
+        curl += ` \\\n  -d '${bodyStr}'`;
+        return curl;
+      };
+
+      const getBurpSnippet = () => {
+        if (!results || !results.url) return '';
+        try {
+          const parsedUrl = new URL(results.url);
+          const path = parsedUrl.pathname + parsedUrl.search;
+          const host = parsedUrl.host;
+          const bodyStr = JSON.stringify(results.synthesized_payload, null, 2);
+          let raw = `PUT ${path} HTTP/1.1\nHost: ${host}\nContent-Type: application/json\nContent-Length: ${bodyStr.length}\n`;
+          if (authHeader) raw += `Authorization: ${authHeader}\n`;
+          if (cookie) raw += `Cookie: ${cookie}\n`;
+          raw += `User-Agent: Byakugan-Probe/1.0\n\n${bodyStr}`;
+          return raw;
+        } catch (e) {
+          return JSON.stringify(results.synthesized_payload, null, 2);
+        }
+      };
+
+      return (
+        <div className="app-container">
+          <header className="header">
+            <div className="logo-group">
+              <div className="eye-icon"><div className="eye-pupil"></div></div>
+              <div>
+                <h1 className="app-title">BYAKUGAN 👁️</h1>
+                <p className="subtitle">REST API Method & Schema Introspection Workbench</p>
+              </div>
+            </div>
+          </header>
+
+          <div className="grid-2">
+            <div>
+              <div className="card">
+                <h2 className="card-title">🎯 Target Endpoint Setup</h2>
+                {errorMessage && (
+                  <div style={{ color: 'var(--accent-red)', marginBottom: '1rem', fontSize: '0.875rem' }}>
+                    ⚠️ {errorMessage}
+                  </div>
+                )}
+                <div className="form-group">
+                  <label className="form-label">API Endpoint URL</label>
+                  <input
+                    type="text"
+                    className="input-text"
+                    placeholder="https://api.target.com/v1/users/123"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Cookie String (Optional)</label>
+                  <input
+                    type="text"
+                    className="input-text"
+                    placeholder="session=abc123xyz; token=eyJ..."
+                    value={cookie}
+                    onChange={(e) => setCookie(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Authorization Header (Optional)</label>
+                  <input
+                    type="text"
+                    className="input-text"
+                    placeholder="Bearer eyJhbGciOi..."
+                    value={authHeader}
+                    onChange={(e) => setAuthHeader(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">HTTP Methods to Probe</label>
+                  <div className="verb-toggle-group">
+                    {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((method) => {
+                      const activeClass = selectedMethods.includes(method) ? `active-${method.toLowerCase()}` : '';
+                      return (
+                        <div
+                          key={method}
+                          className={`verb-chip ${activeClass}`}
+                          onClick={() => toggleMethod(method)}
+                        >
+                          {method}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <button className="btn-primary" onClick={handleProbe} disabled={loading}>
+                  {loading ? '👁️ Scanning API Schema...' : '👁️ Activate Byakugan Probe'}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              {results ? (
+                <div>
+                  <div className="card">
+                    <h2 className="card-title">📊 Discovered Field Matrix</h2>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <div className="form-label">Allowed Writable Fields</div>
+                      <div className="badge-list">
+                        {results.field_analysis.allowed_fields?.map((field) => (
+                          <span key={field} className="badge badge-green">✓ {field}</span>
+                        )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None detected</span>}
+                      </div>
+                    </div>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <div className="form-label">Required Fields (Discovered via Validation Errors)</div>
+                      <div className="badge-list">
+                        {results.field_analysis.required_fields?.map((field) => (
+                          <span key={field} className="badge badge-purple">* {field}</span>
+                        )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None required</span>}
+                      </div>
+                    </div>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <div className="form-label">Read-Only / System IDs</div>
+                      <div className="badge-list">
+                        {results.field_analysis.read_only_fields?.map((field) => (
+                          <span key={field} className="badge badge-amber">🔒 {field}</span>
+                        )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="form-label">Mass Assignment Targets (Privilege / Security)</div>
+                      <div className="badge-list">
+                        {results.field_analysis.mass_assignment_candidates?.map((field) => (
+                          <span key={field} className="badge badge-red">⚡ {field}</span>
+                        )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None flagged</span>}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                      <h2 className="card-title" style={{ margin: 0 }}>🛠️ Synthesized Payload</h2>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button className={`verb-chip ${activeTab === 'json' ? 'active-patch' : ''}`} onClick={() => setActiveTab('json')}>JSON Body</button>
+                        <button className={`verb-chip ${activeTab === 'curl' ? 'active-put' : ''}`} onClick={() => setActiveTab('curl')}>cURL Export</button>
+                        <button className={`verb-chip ${activeTab === 'burp' ? 'active-post' : ''}`} onClick={() => setActiveTab('burp')}>Burp Raw</button>
+                      </div>
+                    </div>
+                    <pre className="code-block">
+                      {activeTab === 'json' && JSON.stringify(results.synthesized_payload, null, 2)}
+                      {activeTab === 'curl' && getCurlSnippet()}
+                      {activeTab === 'burp' && getBurpSnippet()}
+                    </pre>
+                  </div>
+                </div>
+              ) : (
+                <div className="card" style={{ textAlign: 'center', padding: '3.5rem 1.5rem', color: 'var(--text-muted)' }}>
+                  <div style={{ fontSize: '2.8rem', marginBottom: '0.5rem' }}>👁️</div>
+                  <h3>Byakugan Standby</h3>
+                  <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                    Enter an API endpoint URL and click probe to visualize allowed fields, validation errors, and reconstructed JSON payloads.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {showDeleteModal && (
+            <div className="modal-backdrop">
+              <div className="modal-card">
+                <h2 style={{ color: 'var(--accent-red)', marginBottom: '0.75rem' }}>⚠️ Destructive Operation Warning</h2>
+                <p style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>
+                  Probing the <strong>DELETE</strong> method will send an HTTP DELETE request to the target API endpoint.
+                </p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  Are you sure you want to include <code>DELETE</code> in your method test list?
+                </p>
+                <div className="modal-actions">
+                  <button className="btn-secondary" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                  <button className="btn-danger" onClick={confirmDeleteMethod}>Confirm DELETE Probe</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
