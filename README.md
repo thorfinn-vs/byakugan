@@ -9,17 +9,17 @@
 
 ---
 
-##  Key Features
+## 💡 Key Features
 
 - **Error-Driven Schema Reconstruction:** Instead of relying on blind wordlist fuzzing, Byakugan parses `400` / `422` validation error outputs from modern frameworks (FastAPI/Pydantic, Django REST, Zod, and Jackson) to automatically infer required request body fields and data types.
-- **GET Response Baseline Mapping:** Derives object properties directly from baseline `GET` responses.
+- **GET Response Baseline Mapping & Cross-Referencing:** Derives object properties directly from baseline `GET` responses and cross-references them against unhandled error text.
 - **Mass Assignment Candidate Spotter:** Automatically highlights privilege-sensitive fields (`role`, `is_admin`, `verified`, `tier`, `balance`) for over-posting tests.
 - **Safety-Gated Destructive Operations:** Prevents accidental data loss by prompting user confirmation before executing `DELETE` probes.
-- **Multi-Format Payload Exporter:** Instantly generates ready-to-use **JSON Bodies**, **cURL commands**, and **Burp Suite Repeater HTTP requests**.
+- **Session Scan History & 1-Click Clipboard Exporter:** Automatically saves recent scans locally for 1-click reloading and exports ready-to-use **JSON Bodies**, **cURL commands**, and **Burp Suite Repeater HTTP requests**.
 
 ---
 
-##  System Architecture
+## 🛠️ System Architecture
 
 ```
                        +-------------------------------+
@@ -43,7 +43,7 @@
                                        v
                        +---------------+---------------+
                        | Framework Validation Parsers  |
-                       |  (Pydantic/Django/Zod/Spring)  |
+                       | (15 Framework Error Schemas)  |
                        +---------------+---------------+
                                        |
                                        v
@@ -54,7 +54,7 @@
 
 ---
 
-##  Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 - Python 3.9 or higher
@@ -82,13 +82,13 @@
 
 ---
 
-##  Local Test Lab (Included)
+## 🧪 Enterprise Test Lab (Included)
 
-To test Byakugan locally without targeting external systems, run the included mock target server:
+To test Byakugan locally against a realistic Enterprise SaaS environment:
 
 ```bash
-python lab_server.py
+python enterprise_lab.py
 ```
-- **Target URL:** `http://localhost:5001/api/v1/users/123`
-- Enter this URL into Byakugan to visualize baseline fields, 422 Pydantic error parsing, and mass-assignment flags.
-
+- **Target URL:** `http://localhost:5002/api/v2/organizations/org_99/users/usr_456`
+- **Authorization Header:** `Bearer test_token`
+- Enter this URL and auth header into Byakugan to visualize baseline fields, 422 error parsing, and mass-assignment flags.

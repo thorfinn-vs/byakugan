@@ -31,7 +31,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-sans); min-height: 100vh; line-height: 1.5; }
-    .app-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .app-container { max-width: 1240px; margin: 0 auto; padding: 2rem 1.5rem; }
     .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
     .logo-group { display: flex; align-items: center; gap: 0.75rem; }
     .eye-icon { width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle, #e0e7ff 0%, #a78bfa 50%, #6d28d9 100%); box-shadow: 0 0 15px var(--byakugan-glow); display: flex; align-items: center; justify-content: center; }
@@ -41,7 +41,7 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     @media (max-width: 868px) { .grid-2 { grid-template-columns: 1fr; } }
     .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
-    .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
     .form-group { margin-bottom: 1.25rem; }
     .form-label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.375rem; }
     .input-text { width: 100%; padding: 0.75rem 1rem; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-family: var(--font-mono); font-size: 0.9rem; transition: all 0.2s ease; }
@@ -56,6 +56,8 @@
     .btn-primary { width: 100%; padding: 0.85rem 1.5rem; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: #ffffff; font-weight: 600; font-size: 0.95rem; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 15px var(--byakugan-glow); transition: transform 0.1s ease, filter 0.2s ease; }
     .btn-primary:hover { filter: brightness(1.15); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-copy { padding: 0.35rem 0.75rem; background-color: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main); font-size: 0.75rem; font-family: var(--font-sans); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .btn-copy:hover { border-color: var(--byakugan-purple); color: var(--byakugan-purple); }
     .badge-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
     .badge { padding: 0.25rem 0.6rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.35rem; }
     .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
@@ -63,6 +65,10 @@
     .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
     .badge-purple { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); }
     .code-block { background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; color: #e5e7eb; white-space: pre-wrap; word-break: break-all; max-height: 250px; overflow-y: auto; }
+    .history-item { padding: 0.75rem; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.15s; display: flex; justify-content: space-between; align-items: center; }
+    .history-item:hover { border-color: var(--byakugan-purple); background-color: var(--bg-card-hover); }
+    .history-url { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-main); word-break: break-all; }
+    .history-time { font-size: 0.7rem; color: var(--text-dim); }
     .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .modal-card { background-color: var(--bg-card); border: 1px solid var(--accent-red); border-radius: 12px; padding: 2rem; max-width: 480px; width: 90%; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25); }
     .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
@@ -70,7 +76,6 @@
     .btn-secondary { flex: 1; padding: 0.75rem; background-color: transparent; color: var(--text-muted); border: 1px solid var(--border-color); font-weight: 600; border-radius: 6px; cursor: pointer; }
   </style>
 
-  <!-- React & Babel via CDN for Zero-Dependency Standalone Mode -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -79,7 +84,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect } = React;
 
     function App() {
       const [url, setUrl] = useState('');
@@ -91,6 +96,34 @@
       const [results, setResults] = useState(null);
       const [errorMessage, setErrorMessage] = useState('');
       const [activeTab, setActiveTab] = useState('json');
+      const [copyText, setCopyText] = useState('Copy');
+      const [history, setHistory] = useState([]);
+
+      // Load History from localStorage on mount
+      useEffect(() => {
+        const saved = localStorage.getItem('byakugan_history');
+        if (saved) {
+          try { setHistory(JSON.parse(saved)); } catch(e) {}
+        }
+      }, []);
+
+      const saveToHistory = (targetUrl, headerStr, cookieStr) => {
+        const newItem = {
+          url: targetUrl,
+          authHeader: headerStr,
+          cookie: cookieStr,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        const updated = [newItem, ...history.filter(i => i.url !== targetUrl)].slice(0, 5);
+        setHistory(updated);
+        localStorage.setItem('byakugan_history', JSON.stringify(updated));
+      };
+
+      const loadHistoryItem = (item) => {
+        setUrl(item.url);
+        if (item.authHeader) setAuthHeader(item.authHeader);
+        if (item.cookie) setCookie(item.cookie);
+      };
 
       const toggleMethod = (method) => {
         if (method === 'DELETE' && !selectedMethods.includes('DELETE')) {
@@ -134,6 +167,7 @@
           const data = await response.json();
           if (response.ok) {
             setResults(data);
+            saveToHistory(url, authHeader, cookie);
           } else {
             setErrorMessage(data.error || 'Failed to probe target endpoint.');
           }
@@ -171,6 +205,17 @@
         }
       };
 
+      const handleCopy = () => {
+        let contentToCopy = '';
+        if (activeTab === 'json') contentToCopy = JSON.stringify(results?.synthesized_payload, null, 2);
+        else if (activeTab === 'curl') contentToCopy = getCurlSnippet();
+        else if (activeTab === 'burp') contentToCopy = getBurpSnippet();
+
+        navigator.clipboard.writeText(contentToCopy);
+        setCopyText('Copied!');
+        setTimeout(() => setCopyText('Copy'), 2000);
+      };
+
       return (
         <div className="app-container">
           <header className="header">
@@ -186,7 +231,10 @@
           <div className="grid-2">
             <div>
               <div className="card">
-                <h2 className="card-title">🎯 Target Endpoint Setup</h2>
+                <div className="card-title">
+                  <span>🎯 Target Endpoint Setup</span>
+                </div>
+
                 {errorMessage && (
                   <div style={{ color: 'var(--accent-red)', marginBottom: '1rem', fontSize: '0.875rem' }}>
                     ⚠️ {errorMessage}
@@ -243,13 +291,30 @@
                   {loading ? '👁️ Scanning API Schema...' : '👁️ Activate Byakugan Probe'}
                 </button>
               </div>
+
+              {/* History Card */}
+              {history.length > 0 && (
+                <div className="card">
+                  <div className="card-title">
+                    <span>🕒 Recent Scan History</span>
+                  </div>
+                  {history.map((item, idx) => (
+                    <div key={idx} className="history-item" onClick={() => loadHistoryItem(item)}>
+                      <span className="history-url">{item.url}</span>
+                      <span className="history-time">{item.timestamp}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div>
               {results ? (
                 <div>
                   <div className="card">
-                    <h2 className="card-title">📊 Discovered Field Matrix</h2>
+                    <div className="card-title">
+                      <span>📊 Discovered Field Matrix</span>
+                    </div>
                     <div style={{ marginBottom: '1rem' }}>
                       <div className="form-label">Allowed Writable Fields</div>
                       <div className="badge-list">
@@ -287,10 +352,11 @@
                   <div className="card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                       <h2 className="card-title" style={{ margin: 0 }}>🛠️ Synthesized Payload</h2>
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button className={`verb-chip ${activeTab === 'json' ? 'active-patch' : ''}`} onClick={() => setActiveTab('json')}>JSON Body</button>
-                        <button className={`verb-chip ${activeTab === 'curl' ? 'active-put' : ''}`} onClick={() => setActiveTab('curl')}>cURL Export</button>
-                        <button className={`verb-chip ${activeTab === 'burp' ? 'active-post' : ''}`} onClick={() => setActiveTab('burp')}>Burp Raw</button>
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <button className={`verb-chip ${activeTab === 'json' ? 'active-patch' : ''}`} onClick={() => setActiveTab('json')}>JSON</button>
+                        <button className={`verb-chip ${activeTab === 'curl' ? 'active-put' : ''}`} onClick={() => setActiveTab('curl')}>cURL</button>
+                        <button className={`verb-chip ${activeTab === 'burp' ? 'active-post' : ''}`} onClick={() => setActiveTab('burp')}>Burp</button>
+                        <button className="btn-copy" onClick={handleCopy}>{copyText}</button>
                       </div>
                     </div>
                     <pre className="code-block">
