@@ -1,4 +1,4 @@
-# BYAKUGAN 👁️
+# BYAKUGAN 
 **Automated REST API Method & Schema Introspection Workbench**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
@@ -10,7 +10,7 @@
 
 ---
 
-## 💡 Key Features
+##  Key Features
 
 - **Error-Driven Schema Reconstruction:** Instead of relying on blind wordlist fuzzing, Byakugan parses `400` / `422` validation error outputs from modern frameworks (FastAPI/Pydantic, Django REST, Zod, and Jackson) to automatically infer required request body fields and data types.
 - **GET Response Baseline Mapping:** Derives object properties directly from baseline `GET` responses.
@@ -20,7 +20,7 @@
 
 ---
 
-## 🛠️ System Architecture
+##  System Architecture
 
 ```
                        +-------------------------------+
@@ -55,7 +55,7 @@
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Python 3.9 or higher
@@ -83,7 +83,7 @@
 
 ---
 
-## 🧪 Local Test Lab (Included)
+##  Local Test Lab (Included)
 
 To test Byakugan locally without targeting external systems, run the included mock target server:
 
@@ -95,12 +95,7 @@ python lab_server.py
 
 ---
 
-## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🤝 Contributing
+##  Contributing
 
 Contributions, framework parser updates, and feature requests are welcome! Feel free to open an issue or submit a pull request.
