@@ -1,7 +1,6 @@
-# BYAKUGAN 
+# BYAKUGAN 👁️
 **Automated REST API Method & Schema Introspection Workbench**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Framework](https://img.shields.io/badge/Backend-Flask-green.svg)](https://flask.palletsprojects.com/)
 [![UI](https://img.shields.io/badge/Frontend-React-cyan.svg)](https://react.dev/)
@@ -92,5 +91,4 @@ python lab_server.py
 ```
 - **Target URL:** `http://localhost:5001/api/v1/users/123`
 - Enter this URL into Byakugan to visualize baseline fields, 422 Pydantic error parsing, and mass-assignment flags.
-
 
