@@ -11,7 +11,9 @@
 
 ## 🎬 Demo
 
-![Byakugan Demo](assets/demo.gif)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/thorfinn-vs/byakugan/main/assets/demo.gif" alt="Byakugan Demo" width="750" />
+</p>
 
 ---
 
