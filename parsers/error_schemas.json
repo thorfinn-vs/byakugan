@@ -1,0 +1,105 @@
+{
+  "fastapi_pydantic": [
+    {
+      "loc": ["body", "username"],
+      "msg": "field required",
+      "type": "value_error.missing"
+    },
+    {
+      "loc": ["body", "age"],
+      "msg": "value is not a valid integer",
+      "type": "type_error.integer"
+    }
+  ],
+  "django_rest": {
+    "username": ["This field is required."],
+    "email": ["Enter a valid email address."],
+    "age": ["A valid integer is required."]
+  },
+  "express_zod": [
+    {
+      "code": "invalid_type",
+      "expected": "string",
+      "received": "undefined",
+      "path": ["email"],
+      "message": "Required"
+    }
+  ],
+  "express_joi": {
+    "statusCode": 400,
+    "error": "Bad Request",
+    "details": [
+      {
+        "message": "\"username\" is required",
+        "path": ["username"],
+        "type": "any.required"
+      }
+    ]
+  },
+  "php_laravel": {
+    "message": "The given data was invalid.",
+    "errors": {
+      "username": ["The username field is required."],
+      "email": ["The email field is required."]
+    }
+  },
+  "aspnet_core": {
+    "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "errors": {
+      "Username": ["The Username field is required."],
+      "Email": ["The Email field is required."]
+    }
+  },
+  "ruby_on_rails": {
+    "errors": [
+      {
+        "attribute": "username",
+        "type": "blank",
+        "message": "can't be blank"
+      },
+      {
+        "attribute": "email",
+        "type": "invalid",
+        "message": "is invalid"
+      }
+    ]
+  },
+  "golang_gin": {
+    "errors": [
+      {
+        "field": "Username",
+        "reason": "required"
+      },
+      {
+        "field": "Email",
+        "reason": "email"
+      }
+    ]
+  },
+  "java_spring_boot": {
+    "timestamp": "2026-08-03T11:00:00.000+00:00",
+    "status": 400,
+    "error": "Bad Request",
+    "errors": [
+      {
+        "field": "username",
+        "defaultMessage": "must not be empty"
+      }
+    ]
+  },
+  "custom_rest_wrapper": {
+    "status": "fail",
+    "errors": [
+      {
+        "field": "username",
+        "message": "Username is required"
+      },
+      {
+        "field": "email",
+        "message": "Email is required"
+      }
+    ]
+  }
+}
