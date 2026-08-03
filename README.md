@@ -11,11 +11,10 @@
 
 ## 🎬 Demo
 
-https://github.com/thorfinn-vs/byakugan/assets/demo.mp4
-
-<p align="center">
-  <video src="https://raw.githubusercontent.com/thorfinn-vs/byakugan/main/assets/demo.mp4" controls autoplay loop style="max-width: 100%; border-radius: 8px;"></video>
-</p>
+<div align="center">
+  <video src="https://github.com/thorfinn-vs/byakugan/raw/main/assets/demo.mp4" controls="controls" width="100%" style="max-width: 800px; border-radius: 8px;">
+  </video>
+</div>
 
 ---
 
