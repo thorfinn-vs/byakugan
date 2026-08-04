@@ -91,6 +91,27 @@
     .history-time { font-size: 0.7rem; color: var(--text-dim); }
     .history-stats { display: flex; gap: 0.5rem; font-size: 0.75rem; color: var(--text-muted); }
 
+    /* Enhanced HTTP Status & Response Inspector Styles */
+    .alert-banner { padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .alert-auth { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; }
+    .alert-redirect { background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.35); color: #38bdf8; }
+    .alert-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem; }
+    .alert-desc { font-size: 0.825rem; opacity: 0.9; }
+
+    .status-badge { padding: 0.2rem 0.5rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem; }
+    .status-2xx { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-3xx { background: rgba(6, 182, 212, 0.2); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .status-4xx { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .status-5xx { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    .inspector-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 0.85rem; overflow: hidden; }
+    .inspector-header { padding: 0.85rem 1.25rem; background-color: var(--bg-input); display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; transition: background-color 0.15s; }
+    .inspector-header:hover { background-color: var(--bg-card-hover); }
+    .inspector-body { padding: 1.25rem; border-top: 1px solid var(--border-color); font-size: 0.85rem; }
+    .headers-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.775rem; word-break: break-all; }
+    .headers-table td { padding: 0.35rem 0.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+    .headers-table td:first-child { color: var(--byakugan-purple); font-weight: 600; width: 35%; }
+
     .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .modal-card { background-color: var(--bg-card); border: 1px solid var(--accent-red); border-radius: 12px; padding: 2rem; max-width: 480px; width: 90%; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25); }
     .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
@@ -136,6 +157,8 @@
       const [errorMessage, setErrorMessage] = useState('');
       const [activeTab, setActiveTab] = useState('json');
       const [leftTab, setLeftTab] = useState('setup');
+      const [rightTab, setRightTab] = useState('matrix');
+      const [expandedInspector, setExpandedInspector] = useState({});
       const [copyText, setCopyText] = useState('Copy');
       const [history, setHistory] = useState([]);
 
@@ -145,6 +168,17 @@
           try { setHistory(JSON.parse(saved)); } catch(e) {}
         }
       }, []);
+
+      const toggleInspector = (idx) => {
+        setExpandedInspector(prev => ({ ...prev, [idx]: !prev[idx] }));
+      };
+
+      const getStatusBadgeClass = (statusCode) => {
+        if (statusCode >= 200 && statusCode < 300) return 'status-2xx';
+        if (statusCode >= 300 && statusCode < 400) return 'status-3xx';
+        if (statusCode >= 400 && statusCode < 500) return 'status-4xx';
+        return 'status-5xx';
+      };
 
       const saveToHistory = (targetUrl, headerStr, cookieStr, scanResults) => {
         const newItem = {
@@ -190,7 +224,7 @@
 
       const handleProbe = async () => {
         if (!url) {
-          setErrorMessage('Please enter a target API Endpoint URL.');
+          setErrorMessage('Target API Endpoint URL is required.');
           return;
         }
         setErrorMessage('');
@@ -218,7 +252,7 @@
             setErrorMessage(data.error || 'Failed to probe target endpoint.');
           }
         } catch (err) {
-          setErrorMessage('Could not connect to Byakugan backend server.');
+          setErrorMessage('Unable to communicate with backend server.');
         } finally {
           setLoading(false);
         }
@@ -258,7 +292,7 @@
         else if (activeTab === 'burp') contentToCopy = getBurpSnippet();
 
         navigator.clipboard.writeText(contentToCopy);
-        setCopyText('Copied!');
+        setCopyText('Copied');
         setTimeout(() => setCopyText('Copy'), 2000);
       };
 
@@ -266,7 +300,7 @@
         <div className="app-container">
           <header className="header">
             <div className="logo-group">
-              <ByakuganLogo size={42} />
+              <ByakuganLogo size={36} />
               <div>
                 <h1 className="app-title">BYAKUGAN</h1>
                 <p className="subtitle">REST API Method & Schema Introspection Workbench</p>
@@ -295,12 +329,12 @@
                 {leftTab === 'setup' ? (
                   <div>
                     {errorMessage && (
-                      <div style={{ color: 'var(--accent-red)', marginBottom: '1rem', fontSize: '0.875rem' }}>
+                      <div style={{ color: 'var(--accent-red)', marginBottom: '1rem', fontSize: '0.85rem' }}>
                         {errorMessage}
                       </div>
                     )}
                     <div className="form-group">
-                      <label className="form-label">API Endpoint URL</label>
+                      <label className="form-label">Target Endpoint URL</label>
                       <input
                         type="text"
                         className="input-text"
@@ -310,7 +344,7 @@
                       />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Cookie String (Optional)</label>
+                      <label className="form-label">Cookie Session (Optional)</label>
                       <input
                         type="text"
                         className="input-text"
@@ -347,20 +381,20 @@
                       </div>
                     </div>
                     <button className="btn-primary" onClick={handleProbe} disabled={loading}>
-                      {loading ? 'Scanning API Schema...' : 'Activate Byakugan Probe'}
+                      {loading ? 'Scanning Endpoint...' : 'Execute Probe'}
                     </button>
                   </div>
                 ) : (
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                      <span className="form-label">Saved Scans & Discovered Results</span>
+                      <span className="form-label">Recent Scans</span>
                       {history.length > 0 && (
                         <button className="btn-copy" onClick={clearHistory}>Clear History</button>
                       )}
                     </div>
                     {history.length === 0 ? (
                       <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 0' }}>
-                        No recent scans saved.
+                        No stored scan history.
                       </p>
                     ) : (
                       history.map((item, idx) => (
@@ -371,9 +405,9 @@
                           </div>
                           {item.results && item.results.field_analysis && (
                             <div className="history-stats">
-                              <span>✓ Allowed: {item.results.field_analysis.allowed_fields?.length || 0}</span>
-                              <span>* Required: {item.results.field_analysis.required_fields?.length || 0}</span>
-                              <span>⚡ Mass Assignment: {item.results.field_analysis.mass_assignment_candidates?.length || 0}</span>
+                              <span>Allowed: {item.results.field_analysis.allowed_fields?.length || 0}</span>
+                              <span>Required: {item.results.field_analysis.required_fields?.length || 0}</span>
+                              <span>Mass Assignment: {item.results.field_analysis.mass_assignment_candidates?.length || 0}</span>
                             </div>
                           )}
                         </div>
@@ -387,69 +421,203 @@
             <div>
               {results ? (
                 <div>
-                  <div className="card">
-                    <div className="card-title">
-                      <span>Discovered Field Matrix</span>
-                    </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <div className="form-label">Allowed Writable Fields</div>
-                      <div className="badge-list">
-                        {results.field_analysis.allowed_fields?.map((field) => (
-                          <span key={field} className="badge badge-green">✓ {field}</span>
-                        )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None detected</span>}
+                  {results.auth_required && (
+                    <div className="alert-banner alert-auth">
+                      <div>
+                        <div className="alert-title">
+                          <span>AUTHENTICATION REQUIRED (401 / 403)</span>
+                        </div>
+                        <div className="alert-desc">
+                          Endpoint returned an authorization failure. Provide an <code>Authorization</code> or <code>Cookie</code> header in Target Setup.
+                        </div>
                       </div>
+                      <button className="btn-copy" style={{ borderColor: 'rgba(245, 158, 11, 0.4)', color: '#fbbf24' }} onClick={() => setLeftTab('setup')}>
+                        Set Auth
+                      </button>
                     </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <div className="form-label">Required Fields (Discovered via Validation Errors)</div>
-                      <div className="badge-list">
-                        {results.field_analysis.required_fields?.map((field) => (
-                          <span key={field} className="badge badge-purple">* {field}</span>
-                        )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None required</span>}
+                  )}
+
+                  {results.redirects_detected && results.redirects_detected.length > 0 && (
+                    <div className="alert-banner alert-redirect">
+                      <div>
+                        <div className="alert-title">
+                          <span>HTTP REDIRECT DETECTED</span>
+                        </div>
+                        <div className="alert-desc">
+                          Endpoint redirected to: <code>{results.redirects_detected[0].target}</code>
+                        </div>
                       </div>
+                      <button
+                        className="btn-copy"
+                        style={{ borderColor: 'rgba(6, 182, 212, 0.4)', color: '#38bdf8' }}
+                        onClick={() => {
+                          const target = results.redirects_detected[0].target;
+                          const fullUrl = target.startsWith('http') ? target : new URL(target, url).href;
+                          setUrl(fullUrl);
+                        }}
+                      >
+                        Probe Redirect
+                      </button>
                     </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <div className="form-label">Read-Only / System IDs</div>
-                      <div className="badge-list">
-                        {results.field_analysis.read_only_fields?.map((field) => (
-                          <span key={field} className="badge badge-amber">🔒 {field}</span>
-                        )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None</span>}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="form-label">Mass Assignment Targets (Privilege / Security)</div>
-                      <div className="badge-list">
-                        {results.field_analysis.mass_assignment_candidates?.map((field) => (
-                          <span key={field} className="badge badge-red">⚡ {field}</span>
-                        )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None flagged</span>}
-                      </div>
-                    </div>
-                  </div>
+                  )}
 
                   <div className="card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                      <h2 className="card-title" style={{ margin: 0 }}>Synthesized Payload</h2>
-                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <button className={`verb-chip ${activeTab === 'json' ? 'active-patch' : ''}`} onClick={() => setActiveTab('json')}>JSON</button>
-                        <button className={`verb-chip ${activeTab === 'curl' ? 'active-put' : ''}`} onClick={() => setActiveTab('curl')}>cURL</button>
-                        <button className={`verb-chip ${activeTab === 'burp' ? 'active-post' : ''}`} onClick={() => setActiveTab('burp')}>Burp</button>
-                        <button className="btn-copy" onClick={handleCopy}>{copyText}</button>
+                    <div className="tab-header">
+                      <div
+                        className={`nav-tab ${rightTab === 'matrix' ? 'active' : ''}`}
+                        onClick={() => setRightTab('matrix')}
+                      >
+                        Field Matrix
+                      </div>
+                      <div
+                        className={`nav-tab ${rightTab === 'responses' ? 'active' : ''}`}
+                        onClick={() => setRightTab('responses')}
+                      >
+                        Response Inspector ({results.response_inspector?.length || 0})
+                      </div>
+                      <div
+                        className={`nav-tab ${rightTab === 'payload' ? 'active' : ''}`}
+                        onClick={() => setRightTab('payload')}
+                      >
+                        Payload Synthesis
                       </div>
                     </div>
-                    <pre className="code-block">
-                      {activeTab === 'json' && JSON.stringify(results.synthesized_payload, null, 2)}
-                      {activeTab === 'curl' && getCurlSnippet()}
-                      {activeTab === 'burp' && getBurpSnippet()}
-                    </pre>
+
+                    {rightTab === 'matrix' && (
+                      <div>
+                        <div style={{ marginBottom: '1rem' }}>
+                          <div className="form-label">Allowed Writable Fields</div>
+                          <div className="badge-list">
+                            {results.field_analysis.allowed_fields?.map((field) => (
+                              <span key={field} className="badge badge-green">{field}</span>
+                            )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None detected</span>}
+                          </div>
+                        </div>
+                        <div style={{ marginBottom: '1rem' }}>
+                          <div className="form-label">Required Fields (Validation Schema Inferred)</div>
+                          <div className="badge-list">
+                            {results.field_analysis.required_fields?.map((field) => (
+                              <span key={field} className="badge badge-purple">{field}</span>
+                            )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None required</span>}
+                          </div>
+                        </div>
+                        <div style={{ marginBottom: '1rem' }}>
+                          <div className="form-label">Read-Only / System Attributes</div>
+                          <div className="badge-list">
+                            {results.field_analysis.read_only_fields?.map((field) => (
+                              <span key={field} className="badge badge-amber">{field}</span>
+                            )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None</span>}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="form-label">Mass Assignment Targets (Privilege / Security)</div>
+                          <div className="badge-list">
+                            {results.field_analysis.mass_assignment_candidates?.map((field) => (
+                              <span key={field} className="badge badge-red">{field}</span>
+                            )) || <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>None flagged</span>}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {rightTab === 'responses' && (
+                      <div>
+                        {(!results.response_inspector || results.response_inspector.length === 0) ? (
+                          <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>No responses captured.</p>
+                        ) : (
+                          results.response_inspector.map((item, idx) => {
+                            const isExpanded = expandedInspector[idx] ?? (idx === 0);
+                            const methodClass = `verb-chip active-${item.method.toLowerCase()}`;
+                            const statusClass = getStatusBadgeClass(item.status_code);
+
+                            return (
+                              <div key={idx} className="inspector-card">
+                                <div className="inspector-header" onClick={() => toggleInspector(idx)}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <span className={methodClass} style={{ pointerEvents: 'none', margin: 0 }}>
+                                      {item.method}
+                                    </span>
+                                    <span className={`status-badge ${statusClass}`}>
+                                      {item.status_code} {item.reason}
+                                    </span>
+                                  </div>
+                                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
+                                    {isExpanded ? 'COLLAPSE' : 'EXPAND'}
+                                  </span>
+                                </div>
+
+                                {isExpanded && (
+                                  <div className="inspector-body">
+                                    <div style={{ marginBottom: '1rem' }}>
+                                      <div className="form-label">Response Headers ({Object.keys(item.headers || {}).length})</div>
+                                      <div style={{ maxHeight: '140px', overflowY: 'auto', backgroundColor: 'var(--bg-input)', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                                        <table className="headers-table">
+                                          <tbody>
+                                            {Object.entries(item.headers || {}).map(([hk, hv]) => (
+                                              <tr key={hk}>
+                                                <td>{hk}</td>
+                                                <td style={{ color: 'var(--text-muted)' }}>{hv}</td>
+                                              </tr>
+                                            ))}
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <div style={{ display: 'flex', justify: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                                        <span className="form-label" style={{ margin: 0 }}>Raw Response Body</span>
+                                        <button
+                                          className="btn-copy"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigator.clipboard.writeText(item.body);
+                                          }}
+                                        >
+                                          Copy Raw
+                                        </button>
+                                      </div>
+                                      <pre className="code-block" style={{ maxHeight: '200px' }}>
+                                        {item.body || '(Empty Response Body)'}
+                                      </pre>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    )}
+
+                    {rightTab === 'payload' && (
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                          <span className="form-label" style={{ margin: 0 }}>Synthesized Payload Format</span>
+                          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            <button className={`verb-chip ${activeTab === 'json' ? 'active-patch' : ''}`} onClick={() => setActiveTab('json')}>JSON</button>
+                            <button className={`verb-chip ${activeTab === 'curl' ? 'active-put' : ''}`} onClick={() => setActiveTab('curl')}>cURL</button>
+                            <button className={`verb-chip ${activeTab === 'burp' ? 'active-post' : ''}`} onClick={() => setActiveTab('burp')}>Burp</button>
+                            <button className="btn-copy" onClick={handleCopy}>{copyText}</button>
+                          </div>
+                        </div>
+                        <pre className="code-block">
+                          {activeTab === 'json' && JSON.stringify(results.synthesized_payload, null, 2)}
+                          {activeTab === 'curl' && getCurlSnippet()}
+                          {activeTab === 'burp' && getBurpSnippet()}
+                        </pre>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
                 <div className="card" style={{ textAlign: 'center', padding: '3.5rem 1.5rem', color: 'var(--text-muted)' }}>
                   <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-                    <ByakuganLogo size={56} />
+                    <ByakuganLogo size={48} />
                   </div>
-                  <h3 style={{ color: 'var(--text-main)' }}>Byakugan</h3>
-                  <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                    Enter an API endpoint URL and click probe to visualize allowed fields, validation errors, and reconstructed JSON payloads.
+                  <h3 style={{ color: 'var(--text-main)', fontSize: '1.1rem', fontWeight: 700 }}>BYAKUGAN WORKBENCH</h3>
+                  <p style={{ fontSize: '0.85rem', marginTop: '0.5rem', maxWidth: '420px', margin: '0.5rem auto 0 auto' }}>
+                    Configure a target API endpoint URL and select HTTP methods to initiate schema introspection and verb probing.
                   </p>
                 </div>
               )}

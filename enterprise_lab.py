@@ -91,6 +91,49 @@ def delete_enterprise_user(org_id, user_id):
     return jsonify({"error": "User not found"}), 404
 
 
+@enterprise_lab.route('/api/v2/protected', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def protected_endpoint():
+    """Mock endpoint to test 401 Unauthorized status and guidance."""
+    return jsonify({
+        "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+        "title": "Unauthorized",
+        "status": 401,
+        "detail": "Missing or invalid Bearer authentication token."
+    }), 401
+
+
+@enterprise_lab.route('/api/v2/redirect', methods=['GET', 'POST'])
+def redirect_endpoint():
+    """Mock endpoint to test 302 Redirect handling."""
+    from flask import redirect
+    return redirect("/api/v2/organizations/org_99/users/usr_456", code=302)
+
+
+@enterprise_lab.route('/api/v2/rate-limited', methods=['GET', 'POST'])
+def rate_limited_endpoint():
+    """Mock endpoint to test 429 Rate Limiting handling."""
+    res = jsonify({"error": "Too Many Requests", "detail": "Rate limit exceeded. Please wait 60 seconds."})
+    res.status_code = 429
+    res.headers["Retry-After"] = "60"
+    return res
+
+
+@enterprise_lab.route('/api/v2/server-error', methods=['GET', 'POST'])
+def server_error_endpoint():
+    """Mock endpoint to test 500 Internal Server Error & stack trace parsing."""
+    res = jsonify({
+        "error": "Internal Server Error",
+        "exception": "DatabaseConnectionTimeout: Connection pool exhausted at db_pool.py:142",
+        "traceback": [
+            "File '/app/db_pool.py', line 142, in get_connection",
+            "File '/app/controllers/user_service.py', line 54, in query_user_metadata"
+        ]
+    })
+    res.status_code = 500
+    return res
+
+
 if __name__ == '__main__':
     print("[ENTERPRISE LAB] Listening on http://localhost:5002")
     enterprise_lab.run(host='0.0.0.0', port=5002, debug=True)
+
